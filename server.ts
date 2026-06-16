@@ -118,8 +118,7 @@ ${docContent.substring(0, 15000)}`;
       });
 
       const fs = await import("fs");
-      // const docPath = path.join(process.cwd(), "hackathon_boring_dense_valves_doc.md");
-      const docPath = path.join(process.cwd(), "quiz_data.md");
+      const docPath = path.join(process.cwd(), "hackathon_boring_dense_valves_doc.md");
       const docContent = fs.readFileSync(docPath, "utf-8");
 
       const prompt = `Based on the following technical documentation, generate exactly 5 multiple choice questions to test a reader's understanding. Each question should have exactly 4 options with only one correct answer.
