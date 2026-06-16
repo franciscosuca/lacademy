@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GraduationCap, BrainCircuit, Layers, FileEdit, Plus, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { ToolType, Note } from '../App';
 import ReactMarkdown from 'react-markdown';
+import { Flashcards } from './Flashcards';
 import { QuizPanel } from './QuizPanel';
 
 interface SidebarRightProps {
@@ -101,12 +102,7 @@ export function SidebarRight({
         {activeTool === 'quiz' ? (
           <QuizPanel />
         ) : activeTool === 'cards' ? (
-          <div className="p-md flex flex-col items-center justify-center text-center gap-md h-full">
-            <h4 className="text-[16px] font-headline-sm font-semibold text-on-surface">Feature Locked</h4>
-            <p className="text-[14px] text-on-surface-variant leading-relaxed max-w-[240px]">
-              The cards feature is currently blocked. Please check back later for updates.
-            </p>
-          </div>
+          <Flashcards />
         ) : (
           <div className="p-sm flex flex-col h-full">
             
