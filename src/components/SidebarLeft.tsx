@@ -20,15 +20,10 @@ interface SidebarLeftProps {
 }
 
 export function SidebarLeft({ theme, toggleTheme, sections, activeSectionId, onSelectSection }: SidebarLeftProps) {
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const toggleExpanded = (id: string) => {
-    setExpandedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+    setExpandedId(prev => (prev === id ? null : id));
   };
 
   return (
@@ -41,10 +36,10 @@ export function SidebarLeft({ theme, toggleTheme, sections, activeSectionId, onS
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col gap-xs px-sm overflow-y-auto scrollbar-hide">
+      <div className="flex-1 flex flex-col gap-xs px-sm overflow-y-auto scrollbar-thin scrollbar-thumb-outline-variant scrollbar-track-transparent">
         {sections.map(section => {
           const isActive = activeSectionId === section.id;
-          const isExpanded = expandedIds.has(section.id);
+          const isExpanded = expandedId === section.id;
           const hasSubs = section.subsections.length > 0;
 
           return (
