@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { SidebarLeft } from './components/SidebarLeft';
 import { MainContent } from './components/MainContent';
 import { SidebarRight } from './components/SidebarRight';
+import { parseMarkdown, DocSection } from './parseMarkdown';
+import rawDoc from '../hackathon_boring_dense_valves_doc.md?raw';
 
 export type ToolType = 'quiz' | 'cards' | 'notes';
 export type Note = {
@@ -13,7 +15,7 @@ export type Note = {
 
 export default function App() {
   const [activeTool, setActiveTool] = useState<ToolType>('notes');
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [notes, setNotes] = useState<Note[]>(() => {
     const saved = localStorage.getItem('academy-notes');
     if (saved) {
@@ -26,6 +28,14 @@ export default function App() {
     return [];
   });
   const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
+  const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
+
+  const sections = useMemo(() => parseMarkdown(rawDoc), []);
+
+  const activeSection = useMemo(
+    () => sections.find(s => s.id === activeSectionId) ?? null,
+    [sections, activeSectionId]
+  );
 
   useEffect(() => {
     localStorage.setItem('academy-notes', JSON.stringify(notes));
@@ -45,11 +55,17 @@ export default function App() {
 
   return (
     <div className="flex h-screen overflow-hidden font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
-      <SidebarLeft theme={theme} toggleTheme={toggleTheme} />
-      <MainContent />
-      <SidebarRight 
-        activeTool={activeTool} 
-        setActiveTool={setActiveTool} 
+      <SidebarLeft
+        theme={theme}
+        toggleTheme={toggleTheme}
+        sections={sections}
+        activeSectionId={activeSectionId}
+        onSelectSection={setActiveSectionId}
+      />
+      <MainContent activeSection={activeSection} />
+      <SidebarRight
+        activeTool={activeTool}
+        setActiveTool={setActiveTool}
         notes={notes}
         setNotes={setNotes}
         activeNoteId={activeNoteId}
