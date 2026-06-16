@@ -29,6 +29,7 @@ export default function App() {
   });
   const [activeNoteId, setActiveNoteId] = useState<string | null>(null);
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const sections = useMemo(() => parseMarkdown(rawDoc), []);
 
@@ -62,7 +63,13 @@ export default function App() {
         activeSectionId={activeSectionId}
         onSelectSection={setActiveSectionId}
       />
-      <MainContent activeSection={activeSection} />
+      <MainContent
+        activeSection={activeSection}
+        sections={sections}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onSelectSection={(id) => { setActiveSectionId(id); setSearchQuery(''); }}
+      />
       <SidebarRight
         activeTool={activeTool}
         setActiveTool={setActiveTool}
