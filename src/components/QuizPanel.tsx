@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrainCircuit, Sparkles, RotateCcw, ChevronLeft, ChevronRight, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -10,12 +10,40 @@ export interface QuizQuestion {
 
 type QuizState = 'idle' | 'generating' | 'taking' | 'results';
 
+const QUIZ_STORAGE_KEY = 'academy-quiz';
+
+interface QuizStorage {
+  quizState: QuizState;
+  questions: QuizQuestion[];
+  currentIndex: number;
+  selectedAnswers: (number | null)[];
+}
+
+function loadQuizState(): QuizStorage | null {
+  const saved = localStorage.getItem(QUIZ_STORAGE_KEY);
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to parse quiz state', e);
+    }
+  }
+  return null;
+}
+
 export function QuizPanel() {
-  const [quizState, setQuizState] = useState<QuizState>('idle');
-  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<(number | null)[]>([]);
+  const saved = loadQuizState();
+  // If page was reloaded while generating, reset to idle
+  const [quizState, setQuizState] = useState<QuizState>(saved?.quizState === 'generating' ? 'idle' : (saved?.quizState ?? 'idle'));
+  const [questions, setQuestions] = useState<QuizQuestion[]>(saved?.questions ?? []);
+  const [currentIndex, setCurrentIndex] = useState(saved?.currentIndex ?? 0);
+  const [selectedAnswers, setSelectedAnswers] = useState<(number | null)[]>(saved?.selectedAnswers ?? []);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const data: QuizStorage = { quizState, questions, currentIndex, selectedAnswers };
+    localStorage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(data));
+  }, [quizState, questions, currentIndex, selectedAnswers]);
 
   const handleGenerateQuiz = async () => {
     setQuizState('generating');

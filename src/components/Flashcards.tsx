@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, X, Check, Loader2, RefreshCw } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -9,16 +9,46 @@ export interface Flashcard {
 
 type CardState = 'question' | 'answer';
 
+const CARDS_STORAGE_KEY = 'academy-flashcards';
+
+interface CardsStorage {
+  cards: Flashcard[];
+  currentIndex: number;
+  cardState: CardState;
+  wrongCount: number;
+  correctCount: number;
+  isFinished: boolean;
+  answeredCurrent: boolean;
+}
+
+function loadCardsState(): CardsStorage | null {
+  const saved = localStorage.getItem(CARDS_STORAGE_KEY);
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      console.error('Failed to parse flashcards state', e);
+    }
+  }
+  return null;
+}
+
 export function Flashcards() {
-  const [cards, setCards] = useState<Flashcard[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [cardState, setCardState] = useState<CardState>('question');
-  const [wrongCount, setWrongCount] = useState(0);
-  const [correctCount, setCorrectCount] = useState(0);
+  const saved = loadCardsState();
+  const [cards, setCards] = useState<Flashcard[]>(saved?.cards ?? []);
+  const [currentIndex, setCurrentIndex] = useState(saved?.currentIndex ?? 0);
+  const [cardState, setCardState] = useState<CardState>(saved?.cardState ?? 'question');
+  const [wrongCount, setWrongCount] = useState(saved?.wrongCount ?? 0);
+  const [correctCount, setCorrectCount] = useState(saved?.correctCount ?? 0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isFinished, setIsFinished] = useState(false);
-  const [answeredCurrent, setAnsweredCurrent] = useState(false);
+  const [isFinished, setIsFinished] = useState(saved?.isFinished ?? false);
+  const [answeredCurrent, setAnsweredCurrent] = useState(saved?.answeredCurrent ?? false);
+
+  useEffect(() => {
+    const data: CardsStorage = { cards, currentIndex, cardState, wrongCount, correctCount, isFinished, answeredCurrent };
+    localStorage.setItem(CARDS_STORAGE_KEY, JSON.stringify(data));
+  }, [cards, currentIndex, cardState, wrongCount, correctCount, isFinished, answeredCurrent]);
 
   const generateCards = useCallback(async () => {
     setIsLoading(true);
