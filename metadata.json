@@ -1,0 +1,6 @@
+{
+  "name": "L'Academy Engineering Hub",
+  "description": "A platform documentation dashboard and learning tools hub for engineering, featuring AI-powered note summaries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
