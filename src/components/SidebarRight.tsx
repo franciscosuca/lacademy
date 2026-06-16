@@ -3,6 +3,7 @@ import { GraduationCap, BrainCircuit, Layers, FileEdit, Plus, Trash2, Sparkles, 
 import { ToolType, Note } from '../App';
 import ReactMarkdown from 'react-markdown';
 import { Flashcards } from './Flashcards';
+import { QuizPanel } from './QuizPanel';
 
 interface SidebarRightProps {
   activeTool: ToolType;
@@ -99,12 +100,7 @@ export function SidebarRight({
 
       <div className="flex-1 overflow-y-auto flex flex-col scrollbar-hide bg-surface-container-low relative">
         {activeTool === 'quiz' ? (
-          <div className="p-md flex flex-col items-center justify-center text-center gap-md h-full">
-            <h4 className="text-[16px] font-headline-sm font-semibold text-on-surface">Feature Locked</h4>
-            <p className="text-[14px] text-on-surface-variant leading-relaxed max-w-[240px]">
-              The quiz feature is currently blocked. Please check back later for updates.
-            </p>
-          </div>
+          <QuizPanel />
         ) : activeTool === 'cards' ? (
           <Flashcards />
         ) : (
