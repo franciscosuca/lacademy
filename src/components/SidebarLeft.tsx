@@ -1,26 +1,35 @@
 import React, { useState } from 'react';
-import { 
-  LineChart, 
-  Rocket, 
-  Router, 
-  ChevronDown, 
-  ChevronRight, 
-  Wand2, 
-  CircuitBoard, 
-  Bell, 
-  Settings, 
-  Moon, 
+import {
+  LineChart,
+  ChevronDown,
+  ChevronRight,
+  Bell,
+  Settings,
+  Moon,
   Sun,
-  HelpCircle 
+  HelpCircle,
 } from 'lucide-react';
+import { DocSection } from '../parseMarkdown';
 
 interface SidebarLeftProps {
   theme: 'light' | 'dark';
   toggleTheme: () => void;
+  sections: DocSection[];
+  activeSectionId: string | null;
+  onSelectSection: (id: string) => void;
 }
 
-export function SidebarLeft({ theme, toggleTheme }: SidebarLeftProps) {
-  const [edgeExpanded, setEdgeExpanded] = useState(true);
+export function SidebarLeft({ theme, toggleTheme, sections, activeSectionId, onSelectSection }: SidebarLeftProps) {
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  const toggleExpanded = (id: string) => {
+    setExpandedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   return (
     <nav className="flex flex-col h-full border-r border-outline-variant py-md bg-surface-container-low w-64 shrink-0 overflow-y-auto scrollbar-hide z-20 relative">
@@ -32,61 +41,52 @@ export function SidebarLeft({ theme, toggleTheme }: SidebarLeftProps) {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col gap-xs px-sm">
-        <div className="mb-xs">
-          <button className="w-full flex items-center justify-between px-xs py-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-lg transition-colors group">
-            <div className="flex items-center gap-sm">
-              <Rocket className="w-5 h-5 group-hover:text-primary transition-colors" />
-              <span className="font-body-md">Getting Started</span>
-            </div>
-          </button>
-        </div>
+      <div className="flex-1 flex flex-col gap-xs px-sm overflow-y-auto scrollbar-hide">
+        {sections.map(section => {
+          const isActive = activeSectionId === section.id;
+          const isExpanded = expandedIds.has(section.id);
+          const hasSubs = section.subsections.length > 0;
 
-        <div className="mb-xs">
-          <button 
-            onClick={() => setEdgeExpanded(!edgeExpanded)}
-            className="w-full flex items-center justify-between px-xs py-xs text-on-surface hover:bg-surface-variant/20 rounded-lg transition-colors group"
-          >
-            <div className="flex items-center gap-sm">
-              <Router className="w-5 h-5 text-primary" />
-              <span className="font-body-md font-semibold">Edge Gateway</span>
-            </div>
-            {edgeExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-          </button>
-          
-          {edgeExpanded && (
-            <div className="ml-lg mt-xs flex flex-col gap-base border-l border-outline-variant pl-xs">
-              <a href="#" className="px-xs py-[6px] text-on-surface-variant hover:text-on-surface rounded transition-colors text-[14px]">Connect directly</a>
-              <a href="#" className="px-xs py-[6px] text-on-surface-variant hover:text-on-surface rounded transition-colors text-[14px]">Configure LAN2</a>
-              <a href="#" className="px-xs py-[6px] text-on-surface-variant hover:text-on-surface rounded transition-colors text-[14px]">Firewall configuration</a>
-              <a href="#" className="px-xs py-[6px] text-on-surface-variant hover:text-on-surface rounded transition-colors text-[14px]">Debug remote access</a>
-              <a href="#" className="px-xs py-[6px] text-on-surface-variant hover:text-on-surface rounded transition-colors text-[14px]">Troubleshoot network</a>
-            </div>
-          )}
-        </div>
+          return (
+            <div key={section.id} className="mb-xs">
+              <button
+                onClick={() => {
+                  onSelectSection(section.id);
+                  if (hasSubs) toggleExpanded(section.id);
+                }}
+                className={`w-full flex items-center justify-between px-xs py-xs rounded-lg transition-colors group text-left ${
+                  isActive
+                    ? 'bg-primary/10 text-on-surface font-semibold'
+                    : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20'
+                }`}
+              >
+                <span className="font-body-md text-[14px] leading-tight pr-2">{section.title}</span>
+                {hasSubs && (
+                  isExpanded
+                    ? <ChevronDown className="w-4 h-4 shrink-0" />
+                    : <ChevronRight className="w-4 h-4 shrink-0" />
+                )}
+              </button>
 
-        <div className="mb-xs">
-          <button className="w-full flex items-center justify-between px-xs py-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-lg transition-colors group">
-            <div className="flex items-center gap-sm">
-              <Wand2 className="w-5 h-5 group-hover:text-primary transition-colors" />
-              <span className="font-body-md">Onboarding Wizard</span>
+              {hasSubs && isExpanded && (
+                <div className="ml-sm mt-xs flex flex-col gap-base border-l border-outline-variant pl-xs">
+                  {section.subsections.map(sub => (
+                    <button
+                      key={sub.id}
+                      onClick={() => onSelectSection(section.id)}
+                      className="px-xs py-[4px] text-on-surface-variant hover:text-on-surface rounded transition-colors text-[13px] text-left"
+                    >
+                      {sub.title}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-
-        <div className="mb-xs">
-          <button className="w-full flex items-center justify-between px-xs py-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-lg transition-colors group">
-            <div className="flex items-center gap-sm">
-              <CircuitBoard className="w-5 h-5 group-hover:text-primary transition-colors" />
-              <span className="font-body-md">EdgeConfig App</span>
-            </div>
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
+          );
+        })}
       </div>
 
-      <div className="mt-auto px-sm pt-md border-t border-outline-variant flex flex-col gap-xs">
+      <div className="mt-auto px-sm pt-md border-t border-outline-variant flex flex-col gap-xs shrink-0">
         <button className="w-full flex items-center gap-sm px-xs py-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-lg transition-colors">
           <Bell className="w-5 h-5" />
           <span className="font-body-md">Notifications</span>
@@ -95,7 +95,7 @@ export function SidebarLeft({ theme, toggleTheme }: SidebarLeftProps) {
           <Settings className="w-5 h-5" />
           <span className="font-body-md">Settings</span>
         </button>
-        <button 
+        <button
           onClick={toggleTheme}
           className="w-full flex items-center gap-sm px-xs py-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-lg transition-colors"
         >
