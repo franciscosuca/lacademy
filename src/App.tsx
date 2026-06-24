@@ -13,9 +13,26 @@ export type Note = {
   summary?: string;
 };
 
+function normalizeUploadedMarkdown(markdown: string, fileName: string): string {
+  if (!markdown.trim()) {
+    return '';
+  }
+
+  if (parseMarkdown(markdown).length > 0) {
+    return markdown;
+  }
+
+  const title = fileName.replace(/\.[^.]+$/, '') || 'Uploaded Document';
+  return `## ${title}\n\n${markdown}`;
+}
+
 export default function App() {
   const [activeTool, setActiveTool] = useState<ToolType>('notes');
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [docContent, setDocContent] = useState(rawDoc);
+  const [isUploadingDocument, setIsUploadingDocument] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [documentName, setDocumentName] = useState('Default documentation');
   const [notes, setNotes] = useState<Note[]>(() => {
     const saved = localStorage.getItem('academy-notes');
     if (saved) {
@@ -31,12 +48,36 @@ export default function App() {
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const sections = useMemo(() => parseMarkdown(rawDoc), []);
+  const sections = useMemo(() => parseMarkdown(docContent), [docContent]);
 
   const activeSection = useMemo(
     () => sections.find(s => s.id === activeSectionId) ?? null,
     [sections, activeSectionId]
   );
+
+  const handleUploadFile = async (file: File) => {
+    setIsUploadingDocument(true);
+    setUploadError(null);
+    try {
+      const { fileToMarkdown } = await import('./fileToMarkdown');
+      const markdown = await fileToMarkdown(file);
+      const normalizedMarkdown = normalizeUploadedMarkdown(markdown, file.name);
+
+      if (!normalizedMarkdown.trim()) {
+        throw new Error('This file has no readable content.');
+      }
+
+      setDocContent(normalizedMarkdown);
+      setDocumentName(file.name);
+      setSearchQuery('');
+      const uploadedSections = parseMarkdown(normalizedMarkdown);
+      setActiveSectionId(uploadedSections[0]?.id ?? null);
+    } catch (error: any) {
+      setUploadError(error.message || 'Failed to load file');
+    } finally {
+      setIsUploadingDocument(false);
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem('academy-notes', JSON.stringify(notes));
@@ -62,6 +103,10 @@ export default function App() {
         sections={sections}
         activeSectionId={activeSectionId}
         onSelectSection={setActiveSectionId}
+        onUploadFile={handleUploadFile}
+        isUploadingDocument={isUploadingDocument}
+        uploadError={uploadError}
+        documentName={documentName}
       />
       <MainContent
         activeSection={activeSection}
@@ -77,8 +122,8 @@ export default function App() {
         setNotes={setNotes}
         activeNoteId={activeNoteId}
         setActiveNoteId={setActiveNoteId}
+        documentContent={docContent}
       />
     </div>
   );
 }
-

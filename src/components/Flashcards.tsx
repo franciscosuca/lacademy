@@ -33,7 +33,13 @@ function loadCardsState(): CardsStorage | null {
   return null;
 }
 
-export function Flashcards() {
+interface FlashcardsProps {
+  documentContent: string;
+}
+
+const MAX_DOCUMENT_CHARS = 15000;
+
+export function Flashcards({ documentContent }: FlashcardsProps) {
   const saved = loadCardsState();
   const [cards, setCards] = useState<Flashcard[]>(saved?.cards ?? []);
   const [currentIndex, setCurrentIndex] = useState(saved?.currentIndex ?? 0);
@@ -62,7 +68,13 @@ export function Flashcards() {
     setAnsweredCurrent(false);
 
     try {
-      const res = await fetch('/api/generate-flashcards', { method: 'POST' });
+      const res = await fetch('/api/generate-flashcards', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: documentContent.slice(0, MAX_DOCUMENT_CHARS) }),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate flashcards');
       setCards(data.cards);
@@ -71,7 +83,7 @@ export function Flashcards() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [documentContent]);
 
   const fireConfetti = () => {
     confetti({

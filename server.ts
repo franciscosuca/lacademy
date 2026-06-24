@@ -11,7 +11,7 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json());
+  app.use(express.json({ limit: "2mb" }));
 
   // API routes FIRST
   app.post("/api/generate-flashcards", async (req, res) => {
@@ -32,8 +32,9 @@ async function startServer() {
       });
 
       // Read the documentation file
+      const uploadedContent = typeof req.body?.content === "string" ? req.body.content.trim() : "";
       const docPath = path.join(process.cwd(), "hackathon_boring_dense_valves_doc.md");
-      const docContent = fs.readFileSync(docPath, "utf-8");
+      const docContent = uploadedContent || fs.readFileSync(docPath, "utf-8");
 
       const prompt = `Based on the following technical documentation, generate exactly 5 flashcards for studying. Each flashcard should have a question and a concise answer. Focus on key concepts, safety requirements, technical specifications, and operational procedures.
 
@@ -117,9 +118,10 @@ ${docContent.substring(0, 15000)}`;
         }
       });
 
+      const uploadedContent = typeof req.body?.content === "string" ? req.body.content.trim() : "";
       const fs = await import("fs");
       const docPath = path.join(process.cwd(), "hackathon_boring_dense_valves_doc.md");
-      const docContent = fs.readFileSync(docPath, "utf-8");
+      const docContent = uploadedContent || fs.readFileSync(docPath, "utf-8");
 
       const prompt = `Based on the following technical documentation, generate exactly 5 multiple choice questions to test a reader's understanding. Each question should have exactly 4 options with only one correct answer.
 

@@ -31,7 +31,13 @@ function loadQuizState(): QuizStorage | null {
   return null;
 }
 
-export function QuizPanel() {
+interface QuizPanelProps {
+  documentContent: string;
+}
+
+const MAX_DOCUMENT_CHARS = 15000;
+
+export function QuizPanel({ documentContent }: QuizPanelProps) {
   const saved = loadQuizState();
   // If page was reloaded while generating, reset to idle
   const [quizState, setQuizState] = useState<QuizState>(saved?.quizState === 'generating' ? 'idle' : (saved?.quizState ?? 'idle'));
@@ -49,7 +55,13 @@ export function QuizPanel() {
     setQuizState('generating');
     setError(null);
     try {
-      const res = await fetch('/api/generate-quiz', { method: 'POST' });
+      const res = await fetch('/api/generate-quiz', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: documentContent.slice(0, MAX_DOCUMENT_CHARS) }),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate quiz');
       setQuestions(data.questions);

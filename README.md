@@ -5,6 +5,7 @@ L'Academy Engineering Hub is a React + TypeScript learning dashboard for explori
 The app includes:
 
 - Structured documentation navigation
+- Upload and load custom `.md` or `.pdf` documentation
 - Study notes with local persistence
 - AI-generated flashcards
 - AI-generated quiz questions
