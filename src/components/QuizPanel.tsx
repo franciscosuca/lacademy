@@ -54,7 +54,6 @@ export function QuizPanel({ documentContent }: QuizPanelProps) {
   const handleGenerateQuiz = async () => {
     if (documentContent.length > MAX_DOCUMENT_CHARS) {
       setError(`Document exceeds ${MAX_DOCUMENT_CHARS.toLocaleString()} characters. Please upload a smaller file.`);
-      setQuizState('idle');
       return;
     }
 
