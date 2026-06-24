@@ -57,6 +57,11 @@ export function Flashcards({ documentContent }: FlashcardsProps) {
   }, [cards, currentIndex, cardState, wrongCount, correctCount, isFinished, answeredCurrent]);
 
   const generateCards = useCallback(async () => {
+    if (documentContent.length > MAX_DOCUMENT_CHARS) {
+      setError(`Document exceeds ${MAX_DOCUMENT_CHARS.toLocaleString()} characters. Please upload a smaller file.`);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     setCards([]);
@@ -73,7 +78,7 @@ export function Flashcards({ documentContent }: FlashcardsProps) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ content: documentContent.slice(0, MAX_DOCUMENT_CHARS) }),
+        body: JSON.stringify({ content: documentContent }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate flashcards');
