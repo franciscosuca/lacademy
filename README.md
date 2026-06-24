@@ -1,20 +1,78 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# L'Academy Engineering Hub
 
-# Run and deploy your AI Studio app
+L'Academy Engineering Hub is a React + TypeScript learning dashboard for exploring technical documentation and studying it with interactive tools.
 
-This contains everything you need to run your app locally.
+The app includes:
 
-View your app in AI Studio: https://ai.studio/apps/6b0c6d83-9cbb-435e-b8ee-660723c3cd42
+- Structured documentation navigation
+- Study notes with local persistence
+- AI-generated flashcards
+- AI-generated quiz questions
+- AI-powered note summaries
 
-## Run Locally
+## Tech Stack
 
-**Prerequisites:**  Node.js
+- React 19 + TypeScript
+- Vite
+- Express (API server)
+- Google GenAI SDK
+- Tailwind CSS
 
+## Prerequisites
+
+- Node.js 20+
+- npm
+- A valid Gemini API key
+
+## Getting Started
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+
+   ```bash
+   npm install
+   ```
+
+2. Create an environment file (for local development):
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Add your Gemini API key in .env:
+
+   ```bash
+   GEMINI_API_KEY=your_api_key_here
+   ```
+
+4. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+5. Open the app:
+   <http://localhost:3000>
+
+## Environment Variables
+
+- GEMINI_API_KEY: Required for AI endpoints
+- APP_URL: Optional app base URL for deployments and callback-style integrations
+
+See .env.example for a template.
+
+## Project Structure
+
+- src/: Frontend application code
+- src/components/: UI components (sidebar, content, quiz, flashcards)
+- server.ts: Express server and API endpoints
+- hackathon_boring_dense_valves_doc.md: Source documentation used by the app
+- metadata.json: Project metadata
+
+## Notes
+
+- Notes are persisted in browser localStorage under academy-notes.
+- AI features call server endpoints that require GEMINI_API_KEY.
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.

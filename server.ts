@@ -26,7 +26,7 @@ async function startServer() {
         apiKey,
         httpOptions: {
           headers: {
-            'User-Agent': 'aistudio-build',
+            'User-Agent': 'lacademy-server',
           }
         }
       });
@@ -83,7 +83,7 @@ ${docContent.substring(0, 15000)}`;
         apiKey,
         httpOptions: {
           headers: {
-            'User-Agent': 'aistudio-build',
+            'User-Agent': 'lacademy-server',
           }
         }
       });
@@ -112,7 +112,7 @@ ${docContent.substring(0, 15000)}`;
         apiKey,
         httpOptions: {
           headers: {
-            'User-Agent': 'aistudio-build',
+            'User-Agent': 'lacademy-server',
           }
         }
       });
