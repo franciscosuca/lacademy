@@ -122,14 +122,14 @@ export function SidebarLeft({
       </div>
 
       <div className="mt-auto px-sm pt-md border-t border-outline-variant flex flex-col gap-xs shrink-0">
-        <button className="w-full flex items-center gap-sm px-xs py-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-lg transition-colors">
+        {/* <button className="w-full flex items-center gap-sm px-xs py-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-lg transition-colors">
           <Bell className="w-5 h-5" />
           <span className="font-body-md">Notifications</span>
         </button>
         <button className="w-full flex items-center gap-sm px-xs py-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-lg transition-colors">
           <Settings className="w-5 h-5" />
           <span className="font-body-md">Settings</span>
-        </button>
+        </button> */}
         <button
           onClick={toggleTheme}
           className="w-full flex items-center gap-sm px-xs py-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-lg transition-colors"
@@ -137,10 +137,10 @@ export function SidebarLeft({
           {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
           <span className="font-body-md">{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
         </button>
-        <button className="w-full flex items-center gap-sm px-xs py-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-lg transition-colors">
+        {/* <button className="w-full flex items-center gap-sm px-xs py-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 rounded-lg transition-colors">
           <HelpCircle className="w-5 h-5" />
           <span className="font-body-md">Help</span>
-        </button>
+        </button> */}
       </div>
     </nav>
   );

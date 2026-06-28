@@ -19,8 +19,31 @@ async function pdfToMarkdown(file: File): Promise<string> {
 
   for (let i = 1; i <= pdf.numPages; i += 1) {
     const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    const pageText = content.items
+    const content = await page.getTextContent() as any;
+    
+    // Handle both items array and readableStream
+    let items: any[] = [];
+    if (content.readableStream) {
+      // For pdfjs-dist with streaming support
+      const stream = content.readableStream as ReadableStream<any>;
+      const reader = stream.getReader();
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (value && value.items) {
+            items.push(...value.items);
+          }
+        }
+      } finally {
+        reader.releaseLock();
+      }
+    } else if (content.items) {
+      // Standard approach - items directly available
+      items = content.items;
+    }
+    
+    const pageText = items
       .map(item => ('str' in item ? item.str : ''))
       .join(' ');
     const pageMarkdown = markdownFromPdfText(pageText, i);
