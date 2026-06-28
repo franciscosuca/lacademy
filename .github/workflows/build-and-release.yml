@@ -1,20 +1,20 @@
 name: Build and Release
 
 on:
-  push:
-    branches:
-      - main
-      - pre-release
+  # push:
+  #   branches:
+  #     - main
+  #     - pre-release
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to deploy to'
-        required: false
-        default: 'staging'
-        type: choice
-        options:
-          - staging
-          - production
+    # inputs:
+    #   environment:
+    #     description: 'Environment to deploy to'
+    #     required: false
+    #     default: 'staging'
+    #     type: choice
+    #     options:
+    #       - staging
+    #       - production
 
 env:
   REGISTRY: ghcr.io
