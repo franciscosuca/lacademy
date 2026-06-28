@@ -12,6 +12,7 @@ interface SidebarRightProps {
   setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
   activeNoteId: string | null;
   setActiveNoteId: (id: string | null) => void;
+  documentContent: string;
 }
 
 export function SidebarRight({
@@ -20,7 +21,8 @@ export function SidebarRight({
   notes,
   setNotes,
   activeNoteId,
-  setActiveNoteId
+  setActiveNoteId,
+  documentContent,
 }: SidebarRightProps) {
   
   const [newNoteTitle, setNewNoteTitle] = useState('');
@@ -100,9 +102,9 @@ export function SidebarRight({
 
       <div className="flex-1 overflow-y-auto flex flex-col scrollbar-hide bg-surface-container-low relative">
         {activeTool === 'quiz' ? (
-          <QuizPanel />
+          <QuizPanel documentContent={documentContent} />
         ) : activeTool === 'cards' ? (
-          <Flashcards />
+          <Flashcards documentContent={documentContent} />
         ) : (
           <div className="p-sm flex flex-col h-full">
             

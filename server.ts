@@ -7,11 +7,13 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const MAX_DOCUMENT_CHARS = 15000;
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json());
+  app.use(express.json({ limit: "2mb" }));
 
   // API routes FIRST
   app.post("/api/generate-flashcards", async (req, res) => {
@@ -32,8 +34,13 @@ async function startServer() {
       });
 
       // Read the documentation file
+      const uploadedContent = typeof req.body?.content === "string" ? req.body.content.trim() : "";
+      if (uploadedContent.length > MAX_DOCUMENT_CHARS) {
+        res.status(400).json({ error: `Document exceeds ${MAX_DOCUMENT_CHARS} characters. Please upload a smaller file.` });
+        return;
+      }
       const docPath = path.join(process.cwd(), "hackathon_boring_dense_valves_doc.md");
-      const docContent = fs.readFileSync(docPath, "utf-8");
+      const docContent = uploadedContent || fs.readFileSync(docPath, "utf-8");
 
       const prompt = `Based on the following technical documentation, generate exactly 5 flashcards for studying. Each flashcard should have a question and a concise answer. Focus on key concepts, safety requirements, technical specifications, and operational procedures.
 
@@ -43,7 +50,7 @@ Return ONLY valid JSON in this exact format (no markdown, no code blocks):
 Make the questions varied - include definitions, procedures, safety warnings, and technical details. Keep answers brief (1-3 sentences max).
 
 Documentation:
-${docContent.substring(0, 15000)}`;
+${docContent.substring(0, MAX_DOCUMENT_CHARS)}`;
 
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
@@ -117,9 +124,14 @@ ${docContent.substring(0, 15000)}`;
         }
       });
 
+      const uploadedContent = typeof req.body?.content === "string" ? req.body.content.trim() : "";
+      if (uploadedContent.length > MAX_DOCUMENT_CHARS) {
+        res.status(400).json({ error: `Document exceeds ${MAX_DOCUMENT_CHARS} characters. Please upload a smaller file.` });
+        return;
+      }
       const fs = await import("fs");
       const docPath = path.join(process.cwd(), "hackathon_boring_dense_valves_doc.md");
-      const docContent = fs.readFileSync(docPath, "utf-8");
+      const docContent = uploadedContent || fs.readFileSync(docPath, "utf-8");
 
       const prompt = `Based on the following technical documentation, generate exactly 5 multiple choice questions to test a reader's understanding. Each question should have exactly 4 options with only one correct answer.
 
@@ -135,7 +147,7 @@ Return ONLY valid JSON in this exact format (no markdown, no code fences):
 The questions should cover different sections of the documentation and test practical understanding, not just memorization.
 
 Documentation:
-${docContent.slice(0, 15000)}`;
+${docContent.slice(0, MAX_DOCUMENT_CHARS)}`;
 
       const response = await ai.models.generateContent({
         model: "gemini-3.5-flash",
