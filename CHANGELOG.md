@@ -1,3 +1,15 @@
+## [1.1.0](https://github.com/franciscosuca/lacademy/compare/v1.0.0...v1.1.0) (2026-06-28)
+
+### Features
+
+* enhance PDF processing to support streaming content extraction ([58b096c](https://github.com/franciscosuca/lacademy/commit/58b096c914e480a809ccf7624e78b114eb1b2ee4))
+* support uploading markdown and pdf documentation ([0ad851f](https://github.com/franciscosuca/lacademy/commit/0ad851fc19905a970ad76f5fe42c0fd3afaa28c0))
+
+### Bug Fixes
+
+* make document size limit explicit for quiz and flashcards ([8fbb046](https://github.com/franciscosuca/lacademy/commit/8fbb0460a66c6f4da0e3589705e6b7f78f0c4509))
+* remove redundant quiz state reset on size validation ([0219285](https://github.com/franciscosuca/lacademy/commit/0219285a860f64ba1ad881de5183b0e9f21b79fd))
+
 ## 1.0.0 (2026-06-24)
 
 ### Features
